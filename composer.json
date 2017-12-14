@@ -25,7 +25,7 @@
   ],
   "require": {
     "n98/magerun2": "^1.4",
-    "magento/product-community-edition": "~2.2.1",
+    "magento/product-community-edition": "2.2.1",
     "composer/composer": "@alpha",
     "staempfli/symlinker-pro": "~1.0",
     "avstudnitz/scopehint2": "~1.0.1"
