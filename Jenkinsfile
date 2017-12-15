@@ -27,7 +27,7 @@ node {
         }
         branchInfo = getBranchInfo()
         stage ('Artifact') {
-            artifactFilename = /tmp/${branchInfo.version}.tar.gz
+            artifactFilename = "/tmp/${branchInfo.version}.tar.gz"
             sh "ARTIFACT_FILENAME=${artifactFilename} build"
         }
         if (branchInfo.type == 'develop') {
