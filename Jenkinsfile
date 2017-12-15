@@ -40,11 +40,11 @@ node {
             server = confirmServerToDeploy()
             if (server) {
                 stage ('Tag Version') {
-                    commitId = getCommitSha()
-                    sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    sh "git checkout develop && git merge ${commitId} && git push"
-                    sh "git checkout master && git merge ${commitId} && git push"
-                    sh "git tag ${branchInfo.version} && git push --tags"
+                    //commitId = getCommitSha()
+                    //sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
+                    //sh "git checkout develop && git merge ${commitId} && git push"
+                    //sh "git checkout master && git merge ${commitId} && git push"
+                    //sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (server == 'stage' || server == 'both') {
                     stage ('Deploy STAGE') {
