@@ -1,4 +1,8 @@
 node {
+    DEV_SERVER=magento22@devlinux04dmz.staempfli.dmz
+    STAGE_SERVER=magento22@devlinux04dmz.staempfli.dmz
+    PROD_SERVER=magento22@devlinux04dmz.staempfli.dmz
+
  	// Clean workspace before doing anything
     deleteDir()
 
@@ -21,19 +25,74 @@ node {
 	            sh "echo 'shell scripts to run integration tests...'"
 	        }
         }
+        branchInfo = getBranchInfo();
         stage ('Artifact') {
-            sh "VERSION=${BRANCH_NAME} build"
+            artifactFilename = /tmp/${branchInfo.version}.tar.gz
+            sh "ARTIFACT_FILENAME=${artifactFilename} build"
         }
-        if (BRANCH_NAME == 'develop') {
-      	    stage ('Deploy') {
-                sh "ssh -p 22 ${DEV_SERVER_USER}@${DEV_SERVER_HOST} 'VERSION=${BRANCH_NAME} ./deploy.sh'"
+        if (branchInfo.type == 'develop') {
+      	    stage ('Deploy DEV') {
+      	         sh "scp -P 22 ${artifactFilename} ${DEV_SERVER}:downloads"
+                 sh "ssh -p 22 ${DEV_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
       	    }
       	}
+      	if (branchInfo.type == 'release' || branchInfo.type == 'hotfix') {
+            server = confirmServerToDeploy()
+            if (server) {
+                stage ('TAG VERSION') {
+                    sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
+                    sh "git checkout develop && git merge ${BRANCH} && git push"
+                    sh "git checkout master && git merge ${BRANCH} && git push"
+                    sh "git tag ${branchInfo.version} && git push --tags"
+                }
+                if (server == 'stage' || server == 'both') {
+                    stage ('DEPLOY STAGE') {
+                        sh "scp -P 22 ${artifactFilename} ${STAGE_SERVER}:downloads"
+                        sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
+                    }
+                }
+                if (server == 'production' || server == 'both') {
+                    stage ('DEPLOY PROD') {
+                        sh "scp -P 22 ${artifactFilename} ${PROD_SERVER}:downloads"
+                        sh "ssh -p 22 ${PROD_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
+                    }
+                }
+            }
+        }
       	stage ('Clean Up') {
+      	    sh "rm -rf {artifactFilename}"
             deleteDir()
         }
     } catch (err) {
         currentBuild.result = 'FAILED'
         throw err
     }
+}
+
+def getBranchInfo() {
+    def branchInfo = [:]
+    branchData = BRANCH_NAME.split('/')
+    if (branchData.size() == 2) {
+        branchInfo['type'] = branchData[0]
+        branchInfo['version'] = branchData[1]
+    } else {
+        branchInfo['type'] = BRANCH_NAME
+        branchInfo['version'] = BRANCH_NAME
+    }
+    return branchInfo
+}
+
+def confirmServerToDeploy() {
+    def server = false
+    try {
+        timeout(time:2, unit:'HOURS') {
+            server = input(
+                id: 'environmentInput', message: 'Deployment Settings', parameters: [
+                choice(choices: "stage\nproduction\nboth", description: 'Target server to deploy', name: 'deployServer')
+            ])
+        }
+    } catch (err) {
+        echo "Timeout expired. Environment was not set by user"
+    }
+    return server
 }
