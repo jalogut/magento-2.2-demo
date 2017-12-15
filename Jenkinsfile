@@ -10,7 +10,7 @@ node {
         	sh "composer install"
         }
         stage ('Tests') {
-            sh "echo 'shell scripts to create DB and settings for integration tests "
+            sh "echo 'shell scripts to create DB and settings for integration tests'"
 	        parallel 'static': {
 	            sh "echo 'shell scripts to run static tests...'"
 	        },
