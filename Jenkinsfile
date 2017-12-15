@@ -39,20 +39,21 @@ node {
       	if (branchInfo.type == 'release' || branchInfo.type == 'hotfix') {
             server = confirmServerToDeploy()
             if (server) {
-                stage ('TAG VERSION') {
+                stage ('Tag Version') {
+                    commitId = getCommitSha()
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    sh "git checkout develop && git merge ${BRANCH} && git push"
-                    sh "git checkout master && git merge ${BRANCH} && git push"
-                    sh "git tag ${branchInfo.version} && git push --tags"
+                    //sh "git checkout develop && git merge ${commitId} && git push"
+                    //sh "git checkout master && git merge ${commitId} && git push"
+                    //sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (server == 'stage' || server == 'both') {
-                    stage ('DEPLOY STAGE') {
+                    stage ('Deploy STAGE') {
                         sh "scp -P 22 ${artifactFilename} ${STAGE_SERVER}:downloads"
                         sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
                 }
                 if (server == 'production' || server == 'both') {
-                    stage ('DEPLOY PROD') {
+                    stage ('Deploy PROD') {
                         sh "scp -P 22 ${artifactFilename} ${PROD_SERVER}:downloads"
                         sh "ssh -p 22 ${PROD_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
@@ -60,11 +61,12 @@ node {
             }
         }
       	stage ('Clean Up') {
-      	    sh "rm -rf {artifactFilename}"
+      	    sh "rm -rf ${artifactFilename}"
             deleteDir()
         }
     } catch (err) {
         currentBuild.result = 'FAILED'
+        // Send email or another notification
         throw err
     }
 }
@@ -95,4 +97,8 @@ def confirmServerToDeploy() {
         echo "Timeout expired. Environment was not set by user"
     }
     return server
+}
+
+def getCommitSha(){
+    return sh(returnStdout: true, script: 'git rev-parse HEAD')
 }
