@@ -39,20 +39,20 @@ node {
       	if (branchInfo.type == 'release' || branchInfo.type == 'hotfix') {
             server = confirmServerToDeploy()
             if (server) {
-                stage ('TAG VERSION') {
+                stage ('Tag Version') {
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    sh "git checkout develop && git merge ${GIT_COMMIT} && git push"
-                    sh "git checkout master && git merge ${GIT_COMMIT} && git push"
+                    sh "git checkout develop && git merge ${GIT_COMMIT.blurb} && git push"
+                    sh "git checkout master && git merge ${GIT_COMMIT.blurb} && git push"
                     sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (server == 'stage' || server == 'both') {
-                    stage ('DEPLOY STAGE') {
+                    stage ('Deploy STAGE') {
                         sh "scp -P 22 ${artifactFilename} ${STAGE_SERVER}:downloads"
                         sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
                 }
                 if (server == 'production' || server == 'both') {
-                    stage ('DEPLOY PROD') {
+                    stage ('Deploy PROD') {
                         sh "scp -P 22 ${artifactFilename} ${PROD_SERVER}:downloads"
                         sh "ssh -p 22 ${PROD_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
