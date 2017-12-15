@@ -40,8 +40,8 @@ node {
             server = confirmServerToDeploy()
             if (server) {
                 stage ('Tag Version') {
-                    //commitId = getCommitSha()
-                    //sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
+                    commitId = getCommitSha()
+                    sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
                     //sh "git checkout develop && git merge ${commitId} && git push"
                     //sh "git checkout master && git merge ${commitId} && git push"
                     //sh "git tag ${branchInfo.version} && git push --tags"
@@ -66,6 +66,7 @@ node {
         }
     } catch (err) {
         currentBuild.result = 'FAILED'
+        // Send email or another notification
         throw err
     }
 }
