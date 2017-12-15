@@ -26,7 +26,7 @@ node {
         }
         if (BRANCH_NAME == 'develop') {
       	    stage ('Deploy') {
-                sh "ssh -p 22 ${DEV_SERVER_USER}@${DEV_SERVER_HOST} 'VERSION=${BRANCH_NAME} deploy.sh'"
+                sh "ssh -p 22 ${DEV_SERVER_USER}@${DEV_SERVER_HOST} 'VERSION=${BRANCH_NAME} ./deploy.sh'"
       	    }
       	}
       	stage ('Clean Up') {
