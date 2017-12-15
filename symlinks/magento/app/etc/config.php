@@ -112,7 +112,7 @@ return array (
     'Magento_CatalogWidget' => 1,
     'Magento_Wishlist' => 1,
     'Shopial_Facebook' => 1,
-    'TddWizard_Fixtures' => 1,
+    'TddWizard_Fixtures' => 0,
   ),
   'i18n' => 
   array (
