@@ -1,7 +1,7 @@
 node {
-    DEV_SERVER=magento22@devlinux04dmz.staempfli.dmz
-    STAGE_SERVER=magento22@devlinux04dmz.staempfli.dmz
-    PROD_SERVER=magento22@devlinux04dmz.staempfli.dmz
+    DEV_SERVER="magento22@devlinux04dmz.staempfli.dmz"
+    STAGE_SERVER="magento22@devlinux04dmz.staempfli.dmz"
+    PROD_SERVER="magento22@devlinux04dmz.staempfli.dmz"
 
  	// Clean workspace before doing anything
     deleteDir()
