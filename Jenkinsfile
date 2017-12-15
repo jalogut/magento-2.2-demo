@@ -25,7 +25,7 @@ node {
 	            sh "echo 'shell scripts to run integration tests...'"
 	        }
         }
-        branchInfo = getBranchInfo();
+        branchInfo = getBranchInfo()
         stage ('Artifact') {
             artifactFilename = /tmp/${branchInfo.version}.tar.gz
             sh "ARTIFACT_FILENAME=${artifactFilename} build"
