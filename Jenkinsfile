@@ -41,8 +41,8 @@ node {
             if (server) {
                 stage ('TAG VERSION') {
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    sh "git checkout develop && git merge ${BRANCH} && git push"
-                    sh "git checkout master && git merge ${BRANCH} && git push"
+                    sh "git checkout develop && git merge ${BRANCH_NAME} && git push"
+                    sh "git checkout master && git merge ${BRANCH_NAME} && git push"
                     sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (server == 'stage' || server == 'both') {
