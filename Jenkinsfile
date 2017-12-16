@@ -1,7 +1,7 @@
 node {
-    DEV_SERVER="magento22@devlinux04dmz.staempfli.dmz"
-    STAGE_SERVER="magento22@devlinux04dmz.staempfli.dmz"
-    PROD_SERVER="magento22@devlinux04dmz.staempfli.dmz"
+    DEV_SERVER="<user>@<host>"
+    STAGE_SERVER="<user>@<host>"
+    PROD_SERVER="<user>@<host>"
 
  	// Clean workspace before doing anything
     deleteDir()
@@ -42,9 +42,9 @@ node {
                 stage ('Tag Version') {
                     commitId = getCommitSha()
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    //sh "git checkout develop && git merge ${commitId} && git push"
-                    //sh "git checkout master && git merge ${commitId} && git push"
-                    //sh "git tag ${branchInfo.version} && git push --tags"
+                    sh "git checkout develop && git merge ${commitId} && git push"
+                    sh "git checkout master && git merge ${commitId} && git push"
+                    sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (server == 'stage' || server == 'both') {
                     stage ('Deploy STAGE') {
