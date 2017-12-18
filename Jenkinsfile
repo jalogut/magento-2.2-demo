@@ -1,7 +1,7 @@
 node {
-    DEV_SERVER="<user>@<host>"
-    STAGE_SERVER="<user>@<host>"
-    PROD_SERVER="<user>@<host>"
+    DEV_SERVER="magento22@devlinux04dmz.staempfli.dmz"
+    STAGE_SERVER="magento22@devlinux04dmz.staempfli.dmz"
+    PROD_SERVER="magento22@devlinux04dmz.staempfli.dmz"
 
  	// Clean workspace before doing anything
     deleteDir()
@@ -37,22 +37,24 @@ node {
       	    }
       	}
       	if (branchInfo.type == 'release' || branchInfo.type == 'hotfix') {
-            server = confirmServerToDeploy()
-            if (server) {
+      	    stage ('Confirm Deploy') {
+                confirmedServer = confirmServerToDeploy()
+            }
+            if (confirmedServer) {
                 stage ('Tag Version') {
                     commitId = getCommitSha()
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    sh "git checkout develop && git merge ${commitId} && git push"
-                    sh "git checkout master && git merge ${commitId} && git push"
-                    sh "git tag ${branchInfo.version} && git push --tags"
+                    // sh "git checkout develop && git merge ${commitId} && git push"
+                    // sh "git checkout master && git merge ${commitId} && git push"
+                    // sh "git tag ${branchInfo.version} && git push --tags"
                 }
-                if (server == 'stage' || server == 'both') {
+                if (confirmedServer in ['stage','both']) {
                     stage ('Deploy STAGE') {
                         sh "scp -P 22 ${artifactFilename} ${STAGE_SERVER}:downloads"
-                        sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
+                      //  sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
                 }
-                if (server == 'production' || server == 'both') {
+                if (confirmedServer in ['production','both']) {
                     stage ('Deploy PROD') {
                         sh "scp -P 22 ${artifactFilename} ${PROD_SERVER}:downloads"
                         sh "ssh -p 22 ${PROD_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
