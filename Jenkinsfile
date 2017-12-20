@@ -44,14 +44,14 @@ node {
                 stage ('Tag Version') {
                     commitId = getCommitSha()
                     sh "git remote set-branches --add origin master && git remote set-branches --add origin develop && git fetch"
-                    // sh "git checkout develop && git merge ${commitId} && git push"
-                    // sh "git checkout master && git merge ${commitId} && git push"
-                    // sh "git tag ${branchInfo.version} && git push --tags"
+                    sh "git checkout develop && git merge ${commitId} && git push"
+                    sh "git checkout master && git merge ${commitId} && git push"
+                    sh "git tag ${branchInfo.version} && git push --tags"
                 }
                 if (confirmedServer in ['stage','both']) {
                     stage ('Deploy STAGE') {
                         sh "scp -P 22 ${artifactFilename} ${STAGE_SERVER}:downloads"
-                      //  sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
+                        sh "ssh -p 22 ${STAGE_SERVER} 'VERSION=${branchInfo.version} ./deploy.sh'"
                     }
                 }
                 if (confirmedServer in ['production','both']) {
