@@ -28,6 +28,7 @@ node {
         branchInfo = getBranchInfo()
         stage ('Artifact') {
             artifactFilename = "/tmp/${branchInfo.version}.tar.gz"
+		sh "pwd"
             sh "ARTIFACT_FILENAME=${artifactFilename} /home/ubuntu/build.sh"
         }
         if (branchInfo.type == 'develop') {
