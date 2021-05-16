@@ -30,7 +30,7 @@ find var vendor pub/static pub/media app/etc -type f -exec chmod g+w {} \; && fi
 # CREATE ARTIFACT
 cd ${BUILD}
 ARTIFACT_FILENAME=../${VERSION}.tar.gz
-tar --exclude-from=../artifact.excludes -czf ${ARTIFACT_FILENAME} .
+tar --exclude-from=/home/ilyass/artifact.excludes -czf ${ARTIFACT_FILENAME} .
 
 # TRANSFER ARTIFACT
 #scp -P 22 ${ARTIFACT_FILENAME} ${SERVER_USERNAME}@${SERVER_HOST}:${DOWNLOADS_DIR}
