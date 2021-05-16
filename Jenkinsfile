@@ -29,7 +29,7 @@ node {
         stage ('Artifact') {
             artifactFilename = "/tmp/${branchInfo.version}.tar.gz"
 		sh "pwd"
-            sh "ARTIFACT_FILENAME=${artifactFilename} build.sh"
+            sh "ARTIFACT_FILENAME=${artifactFilename} ./build.sh"
         }
         if (branchInfo.type == 'develop') {
       	    stage ('Deploy DEV') {
