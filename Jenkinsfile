@@ -1,5 +1,5 @@
 node {
-    DEV_SERVER="<user>@<host>"
+    DEV_SERVER="ilyass@192.168.1.112"
     STAGE_SERVER="<user>@<host>"
     PROD_SERVER="<user>@<host>"
 
